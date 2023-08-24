@@ -1,6 +1,8 @@
 import math
 import json
 
+import numpy as np
+
 from jmespath import exceptions
 from jmespath.compat import string_type as STRING_TYPE
 from jmespath.compat import get_methods
@@ -180,7 +182,7 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({'types': []})
     def _func_to_array(self, arg):
-        if isinstance(arg, list):
+        if isinstance(arg, (list, np.ndarray)):
             return arg
         else:
             return [arg]
@@ -297,7 +299,7 @@ class Functions(metaclass=FunctionRegistry):
             return "string"
         elif isinstance(arg, bool):
             return "boolean"
-        elif isinstance(arg, list):
+        elif isinstance(arg, (list, np.ndarray)):
             return "array"
         elif isinstance(arg, dict):
             return "object"

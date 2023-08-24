@@ -1,5 +1,7 @@
 import operator
 
+import numpy as np
+
 from jmespath import functions
 from jmespath.compat import string_type
 from numbers import Number
@@ -8,6 +10,8 @@ from numbers import Number
 def _equals(x, y):
     if _is_special_number_case(x, y):
         return False
+    elif isinstance(x, np.ndarray) or isinstance(y, np.ndarray):
+        return np.array_equal(x, y)
     else:
         return x == y
 
@@ -172,7 +176,7 @@ class TreeInterpreter(Visitor):
 
     def visit_filter_projection(self, node, value):
         base = self.visit(node['children'][0], value)
-        if not isinstance(base, list):
+        if not isinstance(base, (list, np.ndarray)):
             return None
         comparator_node = node['children'][2]
         collected = []
@@ -185,12 +189,12 @@ class TreeInterpreter(Visitor):
 
     def visit_flatten(self, node, value):
         base = self.visit(node['children'][0], value)
-        if not isinstance(base, list):
+        if not isinstance(base, (list, np.ndarray)):
             # Can't flatten the object if it's not a list.
             return None
         merged_list = []
         for element in base:
-            if isinstance(element, list):
+            if isinstance(element, (list, np.ndarray)):
                 merged_list.extend(element)
             else:
                 merged_list.append(element)
@@ -202,7 +206,7 @@ class TreeInterpreter(Visitor):
     def visit_index(self, node, value):
         # Even though we can index strings, we don't
         # want to support that.
-        if not isinstance(value, list):
+        if not isinstance(value, (list, np.ndarray)):
             return None
         try:
             return value[node['value']]
@@ -216,7 +220,7 @@ class TreeInterpreter(Visitor):
         return result
 
     def visit_slice(self, node, value):
-        if not isinstance(value, list):
+        if not isinstance(value, (list, np.ndarray)):
             return None
         s = slice(*node['children'])
         return value[s]
@@ -271,7 +275,7 @@ class TreeInterpreter(Visitor):
 
     def visit_projection(self, node, value):
         base = self.visit(node['children'][0], value)
-        if not isinstance(base, list):
+        if not isinstance(base, (list, np.ndarray)):
             return None
         collected = []
         for element in base:
