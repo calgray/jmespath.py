@@ -37,6 +37,10 @@ REVERSE_TYPES_MAP = {
 }
 
 
+def is_listlike(arg):
+        return hasattr(arg, "sort")
+
+
 def signature(*arguments):
     def _record_signature(func):
         func.signature = arguments
@@ -182,7 +186,7 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({'types': []})
     def _func_to_array(self, arg):
-        if isinstance(arg, (list, np.ndarray)):
+        if is_listlike(arg):
             return arg
         else:
             return [arg]
@@ -299,7 +303,7 @@ class Functions(metaclass=FunctionRegistry):
             return "string"
         elif isinstance(arg, bool):
             return "boolean"
-        elif isinstance(arg, (list, np.ndarray)):
+        elif is_listlike(arg):
             return "array"
         elif isinstance(arg, dict):
             return "object"
