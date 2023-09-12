@@ -1,8 +1,6 @@
 import math
 import json
 
-import numpy as np
-
 from jmespath import exceptions
 from jmespath.compat import string_type as STRING_TYPE
 from jmespath.compat import get_methods
