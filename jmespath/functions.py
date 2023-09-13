@@ -1,5 +1,6 @@
 import math
 import json
+from typing import Sequence
 
 from jmespath import exceptions
 from jmespath.compat import string_type as STRING_TYPE
@@ -35,8 +36,12 @@ REVERSE_TYPES_MAP = {
 }
 
 
-def is_listlike(arg):
-        return hasattr(arg, "sort")
+def is_array(arg):
+    return hasattr(arg, "__array__")
+
+
+def is_arraylike(arg):
+    return isinstance(arg, Sequence) or is_array(arg)
 
 
 def signature(*arguments):
@@ -184,7 +189,7 @@ class Functions(metaclass=FunctionRegistry):
 
     @signature({'types': []})
     def _func_to_array(self, arg):
-        if is_listlike(arg):
+        if is_arraylike(arg):
             return arg
         else:
             return [arg]
@@ -301,7 +306,7 @@ class Functions(metaclass=FunctionRegistry):
             return "string"
         elif isinstance(arg, bool):
             return "boolean"
-        elif is_listlike(arg):
+        elif is_arraylike(arg):
             return "array"
         elif isinstance(arg, dict):
             return "object"

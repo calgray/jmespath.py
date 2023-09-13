@@ -1,20 +1,20 @@
 import operator
 
 from jmespath import functions
-from jmespath.functions import is_listlike
+from jmespath.functions import is_array, is_arraylike
 from jmespath.compat import string_type
 from numbers import Number
 
 
-def _is_ndarray(arg):
-    return hasattr(arg, "__array_finalize__")
+def _arraylike_all(arg):
+    return arg.__array__().all() if hasattr(arg, "__array__") else arg
 
 
 def _equals(x, y):
     if _is_special_number_case(x, y):
         return False
-    elif _is_ndarray(x) or _is_ndarray(y):
-        return (x == y).all()
+    elif is_array(x) or is_array(y):
+        return _arraylike_all(x == y)
     else:
         return x == y
 
@@ -179,7 +179,7 @@ class TreeInterpreter(Visitor):
 
     def visit_filter_projection(self, node, value):
         base = self.visit(node['children'][0], value)
-        if not is_listlike(base):
+        if not is_arraylike(base):
             return None
         comparator_node = node['children'][2]
         collected = []
@@ -192,12 +192,12 @@ class TreeInterpreter(Visitor):
 
     def visit_flatten(self, node, value):
         base = self.visit(node['children'][0], value)
-        if not is_listlike(base):
+        if not is_arraylike(base):
             # Can't flatten the object if it's not a list.
             return None
         merged_list = []
         for element in base:
-            if is_listlike(element):
+            if is_arraylike(element):
                 merged_list.extend(element)
             else:
                 merged_list.append(element)
@@ -209,7 +209,7 @@ class TreeInterpreter(Visitor):
     def visit_index(self, node, value):
         # Even though we can index strings, we don't
         # want to support that.
-        if not is_listlike(value):
+        if not is_arraylike(value):
             return None
         try:
             return value[node['value']]
@@ -223,7 +223,7 @@ class TreeInterpreter(Visitor):
         return result
 
     def visit_slice(self, node, value):
-        if not is_listlike(value):
+        if not is_arraylike(value):
             return None
         s = slice(*node['children'])
         return value[s]
@@ -278,7 +278,7 @@ class TreeInterpreter(Visitor):
 
     def visit_projection(self, node, value):
         base = self.visit(node['children'][0], value)
-        if not is_listlike(base):
+        if not is_arraylike(base):
             return None
         collected = []
         for element in base:
