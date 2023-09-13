@@ -1,12 +1,9 @@
 import operator
 
 from jmespath import functions
+from jmespath.functions import is_listlike
 from jmespath.compat import string_type
 from numbers import Number
-
-
-def is_listlike(arg):
-    return hasattr(arg, "sort")
 
 
 def is_ndarray(arg):
