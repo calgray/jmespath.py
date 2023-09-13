@@ -6,14 +6,14 @@ from jmespath.compat import string_type
 from numbers import Number
 
 
-def is_ndarray(arg):
+def _is_ndarray(arg):
     return hasattr(arg, "__array_finalize__")
 
 
 def _equals(x, y):
     if _is_special_number_case(x, y):
         return False
-    elif is_ndarray(x) or is_ndarray(y):
+    elif _is_ndarray(x) or _is_ndarray(y):
         return (x == y).all()
     else:
         return x == y
