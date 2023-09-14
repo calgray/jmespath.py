@@ -41,7 +41,7 @@ def is_array(arg):
 
 
 def is_arraylike(arg):
-    return isinstance(arg, Sequence) or is_array(arg)
+    return (isinstance(arg, Sequence) and not isinstance(arg, (str, bytes))) or is_array(arg)
 
 
 def signature(*arguments):

@@ -1,10 +1,9 @@
 import numpy as np
 from parameterized import parameterized
 
-from tests import unittest
-
 import jmespath
 import jmespath.functions
+from tests import unittest
 
 
 class TestNumpyNumeric(unittest.TestCase):
@@ -37,9 +36,9 @@ class TestNumpyNumeric(unittest.TestCase):
         ["compare_literal", "a.data == `[[1,2,3],[4,5,6],[7,8,9]]`", lambda _: True],
         ["compare_flattened", "a.data[] == `[1,2,3,4,5,6,7,8,9]`", lambda _: True],
     ])
-    def test_search(self, _, query, expected):
+    def test_search(self, test_name, query, expected):
         result = jmespath.search(query, self.data)
-        np.testing.assert_equal(result, expected(self.data))
+        np.testing.assert_array_equal(result, expected(self.data), test_name)
 
 
 class TestNumpyStr(unittest.TestCase):
@@ -85,6 +84,6 @@ class TestNumpyStr(unittest.TestCase):
         ["compare_literal", "a.data == [['test', 'messages'],['in', 'numpy']]", lambda _: True],
         ["compare_flattened", "a.data[] == ['test', 'messages', 'in', 'numpy']", lambda _: True],
     ])
-    def test_search(self, _, query, expected):
+    def test_search(self, name, query, expected):
         result = jmespath.search(query, self.data)
-        np.testing.assert_equal(result, expected(self.data))
+        np.testing.assert_equal(result, expected(self.data), name)
