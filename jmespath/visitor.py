@@ -7,7 +7,7 @@ from numbers import Number
 
 
 def _arraylike_all(arg):
-    return arg.__array__().all() if hasattr(arg, "__array__") else arg
+    return arg.__array__().all() if is_array(arg) else arg
 
 
 def _equals(x, y):
