@@ -1,3 +1,8 @@
+1.1.0a1
+=======
+
+* Added support for Arraylike python objects as json arrays.
+
 1.0.1
 =====
 
